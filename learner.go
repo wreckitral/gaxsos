@@ -30,7 +30,7 @@ func (l *learner) Run() string {
         }
     }
 
-    fmt.Printf("Learner %v: Chosen %v", l.id, val)
+    fmt.Printf("Learner %v: Chosen %v\n", l.id, val)
 
     return val
 }
