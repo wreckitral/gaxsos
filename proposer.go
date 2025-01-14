@@ -95,7 +95,6 @@ func (p *proposer) prepare() {
     p.proposalOrd++
 
     msg := NewPrepareMessage(p.id, p.proposalOrd)
-
     fmt.Printf("Proposer %v: sending Prepare with order number %v\n", p.id, p.proposalOrd)
     broadcast(p.acceptors, msg)
 }

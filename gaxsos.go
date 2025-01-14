@@ -1,5 +1,7 @@
 package gaxsos
 
+import "fmt"
+
 // network structure holds all the components of a Paxos system.
 type network struct {
 	proposers []*proposer // a slice of proposer components in the network.
@@ -7,7 +9,21 @@ type network struct {
 	learners  []*learner  // a slice of learner components in the network.
 }
 
-func NewNetwork(nProposers, nAcceptors, nLearners int, vs []string) *network {
+func NewNetwork(nProposers, nAcceptors, nLearners int, vs []string) (*network, error) {
+	if nProposers == 0 {
+		return nil, fmt.Errorf("at least one proposer is required")
+	}
+
+	f := nProposers
+
+	if nAcceptors < 2*f+1 {
+		return nil, fmt.Errorf("at least 2f + 1 acceptor is required for Paxos consensus")
+	}
+
+	if len(vs) != nProposers {
+		return nil, fmt.Errorf("number of values must match number of proposers")
+	}
+
 	// create communication channels for proposers, acceptors, and learners.
 	cProposers := makeChannels(nProposers)
 	cAcceptors := makeChannels(nAcceptors)
@@ -34,7 +50,7 @@ func NewNetwork(nProposers, nAcceptors, nLearners int, vs []string) *network {
 		n.learners[i] = NewLearner(i, cLearners[i])
 	}
 
-	return n // return the initialized network.
+	return n, nil // return the initialized network and no error.
 }
 
 // makeChannels creates a slice of channels for communication, each with a buffer size of 1024.
